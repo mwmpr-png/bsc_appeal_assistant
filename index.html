@@ -258,7 +258,7 @@ async function parseAll() {
 {"repName":"...", "repCode":"...", "quarter":"...", "grade":"...",
  "cases":[{"policyId":"...", "planName":"...", "category":"...", "observations":"full text, verbatim"}]}
 Use empty strings for missing fields. Include every distinct policy.`;
-   const raw = await callClaude(scorecardText.slice(0, 12000), sys);
+   const raw = await callClaude(scorecardText, sys);
 
 console.log("===== BSC RAW =====");
 console.log(raw);
