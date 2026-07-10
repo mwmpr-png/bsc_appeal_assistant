@@ -258,8 +258,15 @@ async function parseAll() {
 {"repName":"...", "repCode":"...", "quarter":"...", "grade":"...",
  "cases":[{"policyId":"...", "planName":"...", "category":"...", "observations":"full text, verbatim"}]}
 Use empty strings for missing fields. Include every distinct policy.`;
-    const raw = await callClaude(scorecardText.slice(0, 12000), sys);
-    const parsed = parseJsonLoose(raw);
+   const raw = await callClaude(scorecardText.slice(0, 12000), sys);
+
+console.log("===== BSC RAW =====");
+console.log(raw);
+
+const parsed = parseJsonLoose(raw);
+
+console.log("===== BSC PARSED =====");
+console.log(parsed);
     if (!parsed || !parsed.cases) throw new Error('parse failed');
     scorecardCases = parsed.cases.map(c => ({...c, repName: parsed.repName, repCode: parsed.repCode, quarter: parsed.quarter, grade: c.category || parsed.grade}));
 
@@ -269,7 +276,14 @@ Use empty strings for missing fields. Include every distinct policy.`;
       const tsys = `Extract from this TFP. Return ONLY valid JSON, no prose:
 {"clientName":"...", "nricLast4":"last 4 chars of NRIC/FIN only, never the full number", "faRepName":"..."}`;
       const raw2 = await callClaude(text.slice(0, 6000), tsys);
-      const p2 = parseJsonLoose(raw2) || {};
+
+console.log("===== TFP RAW =====");
+console.log(raw2);
+
+const p2 = parseJsonLoose(raw2) || {};
+
+console.log("===== TFP PARSED =====");
+console.log(p2);
       tfpRecords.push({ idHint: idFromFilename(f.name), clientName: p2.clientName || '(not found)', nricLast4: p2.nricLast4 || '', faRepName: p2.faRepName || '' });
     }
 
