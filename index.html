@@ -254,16 +254,42 @@ async function parseAll() {
   status.textContent = '';
   try {
     const scorecardText = await extractText(scorecardFile);
-    const sys = `Extract structured case data from a PromiseLand BSC audit report. Return ONLY valid JSON, no prose:
-{"repName":"...", "repCode":"...", "quarter":"...", "grade":"...",
- "cases":[{"policyId":"...", "planName":"...", "category":"...", "observations":"full text, verbatim"}]}
-Use empty strings for missing fields. Include every distinct policy.`;
+    const sys = `Extract structured case data from a PromiseLand BSC audit report.
+
+Return ONLY valid JSON.
+
+{
+  "repName":"",
+  "repCode":"",
+  "quarter":"",
+  "grade":"",
+  "cases":[
+    {
+      "policyId":"",
+      "planName":"",
+      "category":"",
+      "observations":[
+        "Brief summary of observation 1",
+        "Brief summary of observation 2"
+      ]
+    }
+  ]
+}
+
+Rules:
+- Read the ENTIRE PDF.
+- Include every distinct policy.
+- Summarize each observation in ONE sentence.
+- Do NOT copy the report verbatim.
+- Return ONLY valid JSON.
+- Do not wrap the JSON in markdown or \`\`\`json.`;
    const raw = await callClaude(scorecardText, sys);
+    const cleanedRaw = raw.replace(/```json|```/g, "").trim();
+const parsed = JSON.parse(cleanedRaw);
 
 console.log("===== BSC RAW =====");
 console.log(raw);
 
-const parsed = parseJsonLoose(raw);
 
 console.log("===== BSC PARSED =====");
 console.log(parsed);
