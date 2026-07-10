@@ -7,6 +7,7 @@ exports.handler = async function (event) {
   }
   try {
     const { system, prompt } = JSON.parse(event.body);
+    console.log("Calling Anthropic API...");
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -16,11 +17,12 @@ exports.handler = async function (event) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-5',
-        max_tokens: 8192,
+        max_tokens: 1024,
         system: system,
         messages: [{ role: 'user', content: prompt }]
       })
     });
+    console.log("Anthropic responded with status:", response.status);
     const data = await response.json();
     if (!response.ok) {
       return {
