@@ -1,4 +1,4 @@
-—·—📊📄————🖨️——✎——————————<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -225,12 +225,15 @@ function idFromFilename(name) {
 }
 
 async function callClaude(userPrompt, system) {
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetch("/.netlify/functions/claude", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1200, system, messages: [{ role: "user", content: userPrompt }] })
+    body: JSON.stringify({ system, prompt: userPrompt })
   });
   const data = await response.json();
+  if (!response.ok || data.error) {
+    throw new Error(data.error || `Request failed (status ${response.status})`);
+  }
   return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
 }
 
@@ -274,7 +277,7 @@ Use empty strings for missing fields. Include every distinct policy.`;
     status.textContent = `Extracted ${scorecardCases.length} case(s) and ${tfpRecords.length} TFP record(s).`;
   } catch (e) {
     console.error(e);
-    status.textContent = 'Extraction failed — check the files and try again.';
+    status.textContent = 'Extraction failed: ' + (e.message || 'check the files and try again.');
   }
   btn.disabled = false; btn.textContent = 'Submit';
 }
