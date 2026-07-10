@@ -284,8 +284,7 @@ Rules:
 - Return ONLY valid JSON.
 - Do not wrap the JSON in markdown or \`\`\`json.`;
    const raw = await callClaude(scorecardText, sys);
-    const cleanedRaw = raw.replace(/```json|```/g, "").trim();
-const parsed = JSON.parse(cleanedRaw);
+    const parsed = parseJsonLoose(raw);
 
 console.log("===== BSC RAW =====");
 console.log(raw);
